@@ -53,7 +53,7 @@ EthContractUtil ethContractUtil = EthContractUtil.builder(web3j);
 // Query
 List<Type> result = ethContractUtil.select(
         contractAddress, // Contract Address
-        ethAbiCodec.getInputData(
+        EthAbiCodecTool.getInputData(
             "balanceOf", // Name of the method to be called
             new Address(toAddress) // method, if there are multiple parameters, you can continue to pass the next parameter
         ),  // The inputData of the method to be called
@@ -78,7 +78,7 @@ SendResultModel sendResultModel = ethContract.sendRawTransaction(
         privateKey, // Private key of fromAddress
         new BigInteger("1200000"), // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
         new BigInteger("800000"), // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
-        ethAbiCodec.getInputData(
+        EthAbiCodecTool.getInputData(
             "transfer", // Name of the method to be called
             new Address(toAddress), // Parameter 1
             new Uint256(new BigInteger("1000000000000000000")) // Parameter 2，If there are other parameters, you can go ahead and pass in the next
@@ -113,9 +113,9 @@ SendResultModel sendResultModel = erc20Contract.transfer(
         "0x552115849813d334C58f2757037F68E2963C4c5e",
         new BigInteger("1000000000000000000"),
         "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84",
-        "",
-        null,
-        null
+        "privteKey",
+        null, // gasPrice, passing null will automatically use the default value
+        null // gasLimit, passing null will automatically use the default value
 );
 System.out.println(sendResultModel.getEthGetTransactionReceipt());
 
@@ -124,9 +124,9 @@ SendResultModel sendResultModel = erc20Contract.approve(
         "0x552115849813d334C58f2757037F68E2963C4c5e",
         new BigInteger("1000000000000000000"),
         "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84",
-        "",
-        null,
-        null
+        "privteKey",
+        null, // gasPrice, passing null will automatically use the default value
+        null // gasLimit, passing null will automatically use the default value
 );
 
 System.out.println(sendResultModel.getEthGetTransactionReceipt());
@@ -137,9 +137,9 @@ SendResultModel sendResultModel = erc20Contract.transferFrom(
         "0x552115849813d334C58f2757037F68E2963C4c5e",
         new BigInteger("1000000000000000000"),
         "0x552115849813d334C58f2757037F68E2963C4c5e",
-        "",
-        null,
-        null
+        "privteKey",
+        null, // gasPrice, passing null will automatically use the default value
+        null // gasLimit, passing null will automatically use the default value
 );
 
 System.out.println(sendResultModel.getEthGetTransactionReceipt());
