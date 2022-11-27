@@ -72,7 +72,7 @@ EthContractUtil ethContractUtil = EthContractUtil.builder(web3j);
 // Write data to the contract
 // gasPrice, gasLimit two parameters, if you want to use the default value can not pass, or pass null
 // If not, don't pass both parameters, if you want to pass them, pass them together, if set to null, one can be null and one can have a value
-SendResultModel sendResultModel = ethContract.sendRawTransaction(
+SendResultModel sendResultModel = ethContractUtil.sendRawTransaction(
         fromAddress, // Address of the caller
         contractAddress, // Contract Address
         privateKey, // Private key of fromAddress
