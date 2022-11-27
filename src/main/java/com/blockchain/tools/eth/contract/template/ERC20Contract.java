@@ -82,8 +82,8 @@ public class ERC20Contract {
      * @return
      * @throws IOException
      */
-    public Boolean allowance(String owner, String spender) throws IOException {
-        return Commons.resultBool(ethContractUtil, contractAddress,
+    public BigInteger allowance(String owner, String spender) throws IOException {
+        return Commons.resultBigInteger(ethContractUtil, contractAddress,
                 EthAbiCodecTool.getInputData(
                         "allowance",
                         new Address(owner),
