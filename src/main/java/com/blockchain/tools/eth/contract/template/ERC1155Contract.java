@@ -2,6 +2,7 @@ package com.blockchain.tools.eth.contract.template;
 
 import com.blockchain.tools.eth.codec.EthAbiCodecTool;
 import com.blockchain.tools.eth.contract.util.EthContractUtil;
+import com.blockchain.tools.eth.contract.util.model.SendModel;
 import com.blockchain.tools.eth.contract.util.model.SendResultModel;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.*;
@@ -53,7 +54,7 @@ public class ERC1155Contract {
      * @return
      * @throws IOException
      */
-    public BigInteger balanceOf(String address, BigInteger tokenId) throws IOException {
+    public BigInteger balanceOf(String address, BigInteger tokenId) throws Exception {
         return Commons.resultBigInteger(
                 ethContractUtil,
                 contractAddress,
@@ -132,7 +133,7 @@ public class ERC1155Contract {
      * @return
      * @throws IOException
      */
-    public Boolean isApprovedForAll(String owner, String spender) throws IOException {
+    public Boolean isApprovedForAll(String owner, String spender) throws Exception {
         return erc721Contract.isApprovedForAll(owner, spender);
     }
 
@@ -143,15 +144,12 @@ public class ERC1155Contract {
      *
      * @param to
      * @param approved
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @return
      * @throws Exception
      */
-    public SendResultModel setApprovalForAll(String to, Boolean approved, String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
-        return erc721Contract.setApprovalForAll(to, approved, senderAddress, privateKey, gasPrice, gasLimit);
+    public SendResultModel setApprovalForAll(String to, Boolean approved, SendModel sendModel) throws Exception {
+        return erc721Contract.setApprovalForAll(to, approved, sendModel);
     }
 
     /**
@@ -164,19 +162,13 @@ public class ERC1155Contract {
      * @param tokenId
      * @param amount
      * @param data
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @return
      * @throws Exception
      */
-    public SendResultModel safeTransferFrom(String from, String to, BigInteger tokenId, BigInteger amount, byte[] data, String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    public SendResultModel safeTransferFrom(String from, String to, BigInteger tokenId, BigInteger amount, byte[] data, SendModel sendModel) throws Exception {
         return otherTransaction(
-                senderAddress,
-                privateKey,
-                gasPrice,
-                gasLimit,
+                sendModel,
                 EthAbiCodecTool.getInputData(
                         "safeTransferFrom",
                         new Address(from),
@@ -198,14 +190,11 @@ public class ERC1155Contract {
      * @param tokenIds
      * @param amounts
      * @param data
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @return
      * @throws Exception
      */
-    public SendResultModel safeBatchTransferFrom(String from, String to, List<BigInteger> tokenIds, List<BigInteger> amounts, byte[] data, String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    public SendResultModel safeBatchTransferFrom(String from, String to, List<BigInteger> tokenIds, List<BigInteger> amounts, byte[] data, SendModel sendModel) throws Exception {
         if (tokenIds == null || amounts == null || tokenIds.size() != amounts.size()) {
             throw new Exception("ERC1155: ids and amounts length mismatch");
         }
@@ -222,10 +211,7 @@ public class ERC1155Contract {
         }
 
         return otherTransaction(
-                senderAddress,
-                privateKey,
-                gasPrice,
-                gasLimit,
+                sendModel,
                 EthAbiCodecTool.getInputData(
                         "safeBatchTransferFrom",
                         new Address(from),
@@ -245,22 +231,20 @@ public class ERC1155Contract {
      * @return
      * @throws IOException
      */
-    public List<Type> otherSelect(String inputData, TypeReference... outputTypes) throws IOException {
+    public List<Type> otherSelect(String inputData, TypeReference... outputTypes) throws Exception {
         return Commons.otherSelect(ethContractUtil, contractAddress, inputData, outputTypes);
     }
 
     /**
      * Calling custom functions to write contracts
      *
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @param inputData
      * @return
      * @throws Exception
      */
-    public SendResultModel otherTransaction(String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit, String inputData) throws Exception {
-        return Commons.otherTransaction(ethContractUtil, contractAddress, senderAddress, privateKey, gasPrice, gasLimit, inputData);
+    public SendResultModel otherTransaction(SendModel sendModel, String inputData) throws Exception {
+        sendModel.setToAddress(contractAddress);
+        return Commons.otherTransaction(ethContractUtil, sendModel, inputData);
     }
 }

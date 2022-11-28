@@ -1,6 +1,7 @@
 package com.blockchain.tools.eth.contract.template;
 
 import com.blockchain.tools.eth.contract.util.EthContractUtil;
+import com.blockchain.tools.eth.contract.util.model.SendModel;
 import com.blockchain.tools.eth.contract.util.model.SendResultModel;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
@@ -26,10 +27,11 @@ public class Commons {
      * @return
      * @throws IOException
      */
-    public static BigInteger resultBigInteger(EthContractUtil ethContractUtil, String contractAddress, String inputData) throws IOException {
+    public static BigInteger resultBigInteger(EthContractUtil ethContractUtil, String contractAddress, String inputData) throws Exception {
         List<Type> result = ethContractUtil.select(contractAddress,
                 inputData,
-                new TypeReference<Uint256>() {}
+                new TypeReference<Uint256>() {
+                }
         );
 
         if (result == null || result.size() < 1 || result.get(0) == null || result.get(0).getValue() == null) {
@@ -48,10 +50,11 @@ public class Commons {
      * @return
      * @throws IOException
      */
-    public static String resultAddress(EthContractUtil ethContractUtil, String contractAddress, String inputData) throws IOException {
+    public static String resultAddress(EthContractUtil ethContractUtil, String contractAddress, String inputData) throws Exception {
         List<Type> result = ethContractUtil.select(contractAddress,
                 inputData,
-                new TypeReference<Address>() {}
+                new TypeReference<Address>() {
+                }
         );
 
         if (result == null || result.size() < 1 || result.get(0) == null || result.get(0).getValue() == null) {
@@ -70,10 +73,11 @@ public class Commons {
      * @return
      * @throws IOException
      */
-    public static Boolean resultBool(EthContractUtil ethContractUtil, String contractAddress, String inputData) throws IOException {
+    public static Boolean resultBool(EthContractUtil ethContractUtil, String contractAddress, String inputData) throws Exception {
         List<Type> result = ethContractUtil.select(contractAddress,
                 inputData,
-                new TypeReference<Bool>() {}
+                new TypeReference<Bool>() {
+                }
         );
 
         if (result == null || result.size() < 1 || result.get(0) == null || result.get(0).getValue() == null) {
@@ -93,7 +97,7 @@ public class Commons {
      * @return
      * @throws IOException
      */
-    public static List<Type> otherSelect(EthContractUtil ethContractUtil, String contractAddress, String inputData, TypeReference... outputTypes) throws IOException {
+    public static List<Type> otherSelect(EthContractUtil ethContractUtil, String contractAddress, String inputData, TypeReference... outputTypes) throws Exception {
         return ethContractUtil.select(contractAddress, inputData, outputTypes);
     }
 
@@ -101,22 +105,14 @@ public class Commons {
      * Calling custom functions to write contracts
      *
      * @param ethContractUtil
-     * @param contractAddress
-     * @param originatorAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @param inputData
      * @return
      * @throws Exception
      */
-    public static SendResultModel otherTransaction(EthContractUtil ethContractUtil, String contractAddress, String originatorAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit, String inputData) throws Exception {
+    public static SendResultModel otherTransaction(EthContractUtil ethContractUtil, SendModel sendModel, String inputData) throws Exception {
         return ethContractUtil.sendRawTransaction(
-                originatorAddress,
-                contractAddress,
-                privateKey,
-                gasPrice,
-                gasLimit,
+                sendModel,
                 inputData
         );
     }

@@ -2,6 +2,7 @@ package com.blockchain.tools.eth.contract.template;
 
 import com.blockchain.tools.eth.codec.EthAbiCodecTool;
 import com.blockchain.tools.eth.contract.util.EthContractUtil;
+import com.blockchain.tools.eth.contract.util.model.SendModel;
 import com.blockchain.tools.eth.contract.util.model.SendResultModel;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
@@ -48,7 +49,7 @@ public class ERC721Contract {
      * @return
      * @throws IOException
      */
-    public BigInteger balanceOf(String address) throws IOException {
+    public BigInteger balanceOf(String address) throws Exception {
         return Commons.resultBigInteger(
                 ethContractUtil,
                 contractAddress,
@@ -66,7 +67,7 @@ public class ERC721Contract {
      * @return
      * @throws IOException
      */
-    public String ownerOf(BigInteger tokenId) throws IOException {
+    public String ownerOf(BigInteger tokenId) throws Exception {
         return Commons.resultAddress(ethContractUtil, contractAddress,
                 EthAbiCodecTool.getInputData(
                         "ownerOf",
@@ -83,7 +84,7 @@ public class ERC721Contract {
      * @return
      * @throws IOException
      */
-    public Boolean isApprovedForAll(String owner, String spender) throws IOException {
+    public Boolean isApprovedForAll(String owner, String spender) throws Exception {
         return Commons.resultBool(ethContractUtil, contractAddress,
                 EthAbiCodecTool.getInputData(
                         "isApprovedForAll",
@@ -100,7 +101,7 @@ public class ERC721Contract {
      * @return
      * @throws IOException
      */
-    public String getApproved(BigInteger tokenId) throws IOException {
+    public String getApproved(BigInteger tokenId) throws Exception {
         return Commons.resultAddress(ethContractUtil, contractAddress,
                 EthAbiCodecTool.getInputData(
                         "getApproved",
@@ -116,19 +117,13 @@ public class ERC721Contract {
      * @param to
      * @param tokenId
      * @param data
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @return
      * @throws Exception
      */
-    public SendResultModel safeTransferFrom(String from, String to, BigInteger tokenId, byte[] data, String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    public SendResultModel safeTransferFrom(String from, String to, BigInteger tokenId, byte[] data, SendModel sendModel) throws Exception {
         return otherTransaction(
-                senderAddress,
-                privateKey,
-                gasPrice,
-                gasLimit,
+                sendModel,
                 EthAbiCodecTool.getInputData(
                         "safeTransferFrom",
                         new Address(from),
@@ -146,19 +141,13 @@ public class ERC721Contract {
      * @param from
      * @param to
      * @param tokenId
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @return
      * @throws Exception
      */
-    public SendResultModel safeTransferFrom(String from, String to, BigInteger tokenId, String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    public SendResultModel safeTransferFrom(String from, String to, BigInteger tokenId, SendModel sendModel) throws Exception {
         return otherTransaction(
-                senderAddress,
-                privateKey,
-                gasPrice,
-                gasLimit,
+                sendModel,
                 EthAbiCodecTool.getInputData(
                         "safeTransferFrom",
                         new Address(from),
@@ -174,19 +163,13 @@ public class ERC721Contract {
      * @param from
      * @param to
      * @param tokenId
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @return
      * @throws Exception
      */
-    public SendResultModel transferFrom(String from, String to, BigInteger tokenId, String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    public SendResultModel transferFrom(String from, String to, BigInteger tokenId, SendModel sendModel) throws Exception {
         return otherTransaction(
-                senderAddress,
-                privateKey,
-                gasPrice,
-                gasLimit,
+                sendModel,
                 EthAbiCodecTool.getInputData(
                         "transferFrom",
                         new Address(from),
@@ -204,19 +187,13 @@ public class ERC721Contract {
      *
      * @param to
      * @param tokenId
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @return
      * @throws Exception
      */
-    public SendResultModel approve(String to, BigInteger tokenId, String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    public SendResultModel approve(String to, BigInteger tokenId, SendModel sendModel) throws Exception {
         return otherTransaction(
-                senderAddress,
-                privateKey,
-                gasPrice,
-                gasLimit,
+               sendModel,
                 EthAbiCodecTool.getInputData(
                         "approve",
                         new Address(to),
@@ -231,19 +208,13 @@ public class ERC721Contract {
      *
      * @param to
      * @param approved
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @return
      * @throws Exception
      */
-    public SendResultModel setApprovalForAll(String to, Boolean approved, String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    public SendResultModel setApprovalForAll(String to, Boolean approved, SendModel sendModel) throws Exception {
         return otherTransaction(
-                senderAddress,
-                privateKey,
-                gasPrice,
-                gasLimit,
+                sendModel,
                 EthAbiCodecTool.getInputData(
                         "setApprovalForAll",
                         new Address(to),
@@ -260,22 +231,20 @@ public class ERC721Contract {
      * @return
      * @throws IOException
      */
-    public List<Type> otherSelect(String inputData, TypeReference... outputTypes) throws IOException {
+    public List<Type> otherSelect(String inputData, TypeReference... outputTypes) throws Exception {
         return Commons.otherSelect(ethContractUtil, contractAddress, inputData, outputTypes);
     }
 
     /**
      * Calling custom functions to write contracts
      *
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @param inputData
      * @return
      * @throws Exception
      */
-    public SendResultModel otherTransaction(String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit, String inputData) throws Exception {
-        return Commons.otherTransaction(ethContractUtil, contractAddress, senderAddress, privateKey, gasPrice, gasLimit, inputData);
+    public SendResultModel otherTransaction(SendModel sendModel, String inputData) throws Exception {
+        sendModel.setToAddress(contractAddress);
+        return Commons.otherTransaction(ethContractUtil, sendModel, inputData);
     }
 }

@@ -2,6 +2,7 @@ package com.blockchain.tools.eth.contract.template;
 
 import com.blockchain.tools.eth.codec.EthAbiCodecTool;
 import com.blockchain.tools.eth.contract.util.EthContractUtil;
+import com.blockchain.tools.eth.contract.util.model.SendModel;
 import com.blockchain.tools.eth.contract.util.model.SendResultModel;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
@@ -44,7 +45,7 @@ public class ERC20Contract {
      * @return
      * @throws IOException
      */
-    public BigInteger totalSupply() throws IOException {
+    public BigInteger totalSupply() throws Exception {
         return Commons.resultBigInteger(
                 ethContractUtil,
                 contractAddress,
@@ -60,7 +61,7 @@ public class ERC20Contract {
      * @return
      * @throws IOException
      */
-    public BigInteger balanceOf(String account) throws IOException {
+    public BigInteger balanceOf(String account) throws Exception {
         return Commons.resultBigInteger(
                 ethContractUtil,
                 contractAddress,
@@ -82,7 +83,7 @@ public class ERC20Contract {
      * @return
      * @throws IOException
      */
-    public BigInteger allowance(String owner, String spender) throws IOException {
+    public BigInteger allowance(String owner, String spender) throws Exception {
         return Commons.resultBigInteger(ethContractUtil, contractAddress,
                 EthAbiCodecTool.getInputData(
                         "allowance",
@@ -98,19 +99,13 @@ public class ERC20Contract {
      *
      * @param to
      * @param amount
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @return
      * @throws Exception
      */
-    public SendResultModel transfer(String to, BigInteger amount, String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    public SendResultModel transfer(String to, BigInteger amount, SendModel sendModel) throws Exception {
         return otherTransaction(
-                senderAddress,
-                privateKey,
-                gasPrice,
-                gasLimit,
+                sendModel,
                 EthAbiCodecTool.getInputData(
                         "transfer",
                         new Address(to),
@@ -129,19 +124,13 @@ public class ERC20Contract {
      * @param from
      * @param to
      * @param amount
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @return
      * @throws Exception
      */
-    public SendResultModel transferFrom(String from, String to, BigInteger amount, String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    public SendResultModel transferFrom(String from, String to, BigInteger amount, SendModel sendModel) throws Exception {
         return otherTransaction(
-                senderAddress,
-                privateKey,
-                gasPrice,
-                gasLimit,
+                sendModel,
                 EthAbiCodecTool.getInputData(
                         "transferFrom",
                         new Address(from),
@@ -156,19 +145,13 @@ public class ERC20Contract {
      *
      * @param spender
      * @param amount
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @return
      * @throws Exception
      */
-    public SendResultModel approve(String spender, BigInteger amount, String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit) throws Exception {
+    public SendResultModel approve(String spender, BigInteger amount, SendModel sendModel) throws Exception {
         return otherTransaction(
-                senderAddress,
-                privateKey,
-                gasPrice,
-                gasLimit,
+                sendModel,
                 EthAbiCodecTool.getInputData(
                         "approve",
                         new Address(spender),
@@ -185,22 +168,20 @@ public class ERC20Contract {
      * @return
      * @throws IOException
      */
-    public List<Type> otherSelect(String inputData, TypeReference... outputTypes) throws IOException {
+    public List<Type> otherSelect(String inputData, TypeReference... outputTypes) throws Exception {
         return Commons.otherSelect(ethContractUtil, contractAddress, inputData, outputTypes);
     }
 
     /**
      * Calling custom functions to write contracts
      *
-     * @param senderAddress
-     * @param privateKey
-     * @param gasPrice
-     * @param gasLimit
+     * @param sendModel
      * @param inputData
      * @return
      * @throws Exception
      */
-    public SendResultModel otherTransaction(String senderAddress, String privateKey, BigInteger gasPrice, BigInteger gasLimit, String inputData) throws Exception {
-        return Commons.otherTransaction(ethContractUtil, contractAddress, senderAddress, privateKey, gasPrice, gasLimit, inputData);
+    public SendResultModel otherTransaction(SendModel sendModel, String inputData) throws Exception {
+        sendModel.setToAddress(contractAddress);
+        return Commons.otherTransaction(ethContractUtil, sendModel, inputData);
     }
 }

@@ -29,7 +29,7 @@ JDK8+
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-ContractsTools</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->
@@ -73,11 +73,13 @@ EthContractUtil ethContractUtil = EthContractUtil.builder(web3j);
 // gasPrice, gasLimit two parameters, if you want to use the default value can not pass, or pass null
 // If not, don't pass both parameters, if you want to pass them, pass them together, if set to null, one can be null and one can have a value
 SendResultModel sendResultModel = ethContractUtil.sendRawTransaction(
-        fromAddress, // Address of the caller
-        contractAddress, // Contract Address
-        privateKey, // Private key of fromAddress
-        new BigInteger("1200000"), // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
-        new BigInteger("800000"), // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
+        SendModel.builder()
+            .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+            .setPrivateKey("")// Private key of senderAddress
+            .setToAddress("0x428862f821b1A5eFff5B258583572451229eEeA6") // Contract Address
+            .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+            .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+            .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
         EthAbiCodecTool.getInputData(
             "transfer", // Name of the method to be called
             new Address(toAddress), // Parameter 1
@@ -93,13 +95,17 @@ sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction 
 
 To save space, only some of the functions of ERC20 are used here as examples, you can visit the official website for details
 
+Initialization Contract Template
 ```java
 BigDecimal decimal = new BigDecimal("1000000000000000000");
 
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
 
 ERC20Contract erc20Contract = ERC20Contract.builder(web3j, "0x428862f821b1A5eFff5B258583572451229eEeA6");
+```
 
+Read contract
+```java
 // Calling the totalSupply function
 BigInteger total = erc20Contract.totalSupply();
 System.out.println(new BigDecimal(total).divide(decimal, 2, BigDecimal.ROUND_UP));
@@ -107,40 +113,51 @@ System.out.println(new BigDecimal(total).divide(decimal, 2, BigDecimal.ROUND_UP)
 // Calling the balanceOf function
 BigInteger amount = erc20Contract.balanceOf("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84");
 System.out.println(new BigDecimal(amount).divide(decimal, 2, BigDecimal.ROUND_UP));
+```
 
+Write contract
+```java
 // Calling the transfer function
 SendResultModel sendResultModel = erc20Contract.transfer(
         "0x552115849813d334C58f2757037F68E2963C4c5e",
         new BigInteger("1000000000000000000"),
-        "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84",
-        "privteKey",
-        null, // gasPrice, passing null will automatically use the default value
-        null // gasLimit, passing null will automatically use the default value
+        SendModel.builder()
+            .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+            .setPrivateKey("")// Private key of senderAddress
+            .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+            .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+            .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
 );
-System.out.println(sendResultModel.getEthGetTransactionReceipt());
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
 
 // Calling the approve function
 SendResultModel sendResultModel = erc20Contract.approve(
         "0x552115849813d334C58f2757037F68E2963C4c5e",
         new BigInteger("1000000000000000000"),
-        "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84",
-        "privteKey",
-        null, // gasPrice, passing null will automatically use the default value
-        null // gasLimit, passing null will automatically use the default value
+        SendModel.builder()
+            .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+            .setPrivateKey("")// Private key of senderAddress
+            .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+            .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+            .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
 );
-
-System.out.println(sendResultModel.getEthGetTransactionReceipt());
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
 
 // Calling the transferFrom function
 SendResultModel sendResultModel = erc20Contract.transferFrom(
         "0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84",
         "0x552115849813d334C58f2757037F68E2963C4c5e",
         new BigInteger("1000000000000000000"),
-        "0x552115849813d334C58f2757037F68E2963C4c5e",
-        "privteKey",
-        null, // gasPrice, passing null will automatically use the default value
-        null // gasLimit, passing null will automatically use the default value
+        SendModel.builder()
+            .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
+            .setPrivateKey("")// Private key of senderAddress
+            .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
+            .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
+            .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
 );
 
-System.out.println(sendResultModel.getEthGetTransactionReceipt());
+sendResultModel.getEthSendTransaction(); // Results after sending a transaction
+sendResultModel.getEthGetTransactionReceipt(); // Results after the transaction is broadcast
 ```
