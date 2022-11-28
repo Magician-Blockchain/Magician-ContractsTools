@@ -42,15 +42,18 @@ JDK8+
 
 ### Calling custom functions for contracts
 
-Read Contract
+Initialize the contract util class
 
 ```java
 Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
 String contractAddress = "";
 
 EthContractUtil ethContractUtil = EthContractUtil.builder(web3j);
-        
-// Query
+```
+
+Read Contract
+
+```java
 List<Type> result = ethContractUtil.select(
         contractAddress, // Contract Address
         EthAbiCodecTool.getInputData(
@@ -64,19 +67,12 @@ List<Type> result = ethContractUtil.select(
 Write Contract
 
 ```java
-Web3j web3j = Web3j.build(new HttpService("https://data-seed-prebsc-2-s1.binance.org:8545"));
-String contractAddress = "";
-
-EthContractUtil ethContractUtil = EthContractUtil.builder(web3j);
-
 // Write data to the contract
-// gasPrice, gasLimit two parameters, if you want to use the default value can not pass, or pass null
-// If not, don't pass both parameters, if you want to pass them, pass them together, if set to null, one can be null and one can have a value
 SendResultModel sendResultModel = ethContractUtil.sendRawTransaction(
         SendModel.builder()
             .setSenderAddress("0xb4e32492E9725c3215F1662Cf28Db1862ed1EE84") // Address of the caller
             .setPrivateKey("")// Private key of senderAddress
-            .setToAddress("0x428862f821b1A5eFff5B258583572451229eEeA6") // Contract Address
+            .setToAddress(contractAddress) // Contract Address
             .setValue(new BigInteger("1000000000")) // coin amount, If you want to use the default value, you can pass null directly or leave this parameter out.
             .setGasPrice(new BigInteger("1000")) // gasPrice，If you want to use the default value, you can pass null directly or leave this parameter out.
             .setGasLimit(new BigInteger("800000")) // gasLimit，If you want to use the default value, you can pass null directly or leave this parameter out.
