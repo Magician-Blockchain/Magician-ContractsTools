@@ -86,18 +86,23 @@ public class EthContractUtil {
     public SendResultModel sendRawTransaction(SendModel sendModel, String inputData) throws Exception {
         validation(sendModel, inputData);
 
-        BigInteger nonce = sendModel.getNonce();
-
-        if(nonce == null){
+        if(sendModel.getNonce() == null){
             EthGetTransactionCount ethGetTransactionCount = web3j.ethGetTransactionCount(sendModel.getSenderAddress(), DefaultBlockParameterName.LATEST).send();
-            nonce = ethGetTransactionCount.getTransactionCount();
+            sendModel.setNonce(ethGetTransactionCount.getTransactionCount());
         }
 
         if(sendModel.getGasPrice() == null){
             sendModel.setGasPrice(web3j.ethGasPrice().send().getGasPrice());
         }
 
-        RawTransaction rawTransaction = RawTransaction.createTransaction(nonce, sendModel.getGasPrice(), sendModel.getGasLimit(), sendModel.getToAddress(), sendModel.getValue(), inputData);
+        RawTransaction rawTransaction = RawTransaction.createTransaction(
+                sendModel.getNonce(),
+                sendModel.getGasPrice(),
+                sendModel.getGasLimit(),
+                sendModel.getToAddress(),
+                sendModel.getValue(),
+                inputData
+        );
 
         byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, Credentials.create(sendModel.getPrivateKey()));
         String hexValue = Numeric.toHexString(signedMessage);
