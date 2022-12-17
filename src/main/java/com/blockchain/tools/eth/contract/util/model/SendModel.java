@@ -41,6 +41,11 @@ public class SendModel {
      */
     private BigInteger gasLimit;
 
+    /**
+     * nonce
+     */
+    private BigInteger nonce;
+
     private SendModel(){
         value = BigInteger.ZERO;
     }
@@ -100,6 +105,15 @@ public class SendModel {
 
     public SendModel setGasLimit(BigInteger gasLimit) {
         this.gasLimit = gasLimit;
+        return this;
+    }
+
+    public BigInteger getNonce() {
+        return nonce;
+    }
+
+    public SendModel setNonce(BigInteger nonce) {
+        this.nonce = nonce;
         return this;
     }
 }

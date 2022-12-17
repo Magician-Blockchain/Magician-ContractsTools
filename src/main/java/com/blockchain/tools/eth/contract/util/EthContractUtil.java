@@ -86,9 +86,12 @@ public class EthContractUtil {
     public SendResultModel sendRawTransaction(SendModel sendModel, String inputData) throws Exception {
         validation(sendModel, inputData);
 
-        EthGetTransactionCount ethGetTransactionCount = web3j.ethGetTransactionCount(sendModel.getSenderAddress(), DefaultBlockParameterName.LATEST).send();
+        BigInteger nonce = sendModel.getNonce();
 
-        BigInteger nonce = ethGetTransactionCount.getTransactionCount();
+        if(nonce == null){
+            EthGetTransactionCount ethGetTransactionCount = web3j.ethGetTransactionCount(sendModel.getSenderAddress(), DefaultBlockParameterName.LATEST).send();
+            nonce = ethGetTransactionCount.getTransactionCount();
+        }
 
         if(sendModel.getGasPrice() == null){
             sendModel.setGasPrice(web3j.ethGasPrice().send().getGasPrice());
