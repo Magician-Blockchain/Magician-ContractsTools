@@ -46,6 +46,21 @@ public class SendModel {
      */
     private BigInteger nonce;
 
+    /**
+     * chain id
+     */
+    private long chainId = -1;
+
+    /**
+     * max priority fee perGas
+     */
+    private BigInteger maxPriorityFeePerGas;
+
+    /**
+     * max fee per gas
+     */
+    private BigInteger maxFeePerGas;
+
     private SendModel(){
         value = BigInteger.ZERO;
     }
@@ -114,6 +129,33 @@ public class SendModel {
 
     public SendModel setNonce(BigInteger nonce) {
         this.nonce = nonce;
+        return this;
+    }
+
+    public long getChainId() {
+        return chainId;
+    }
+
+    public SendModel setChainId(long chainId) {
+        this.chainId = chainId;
+        return this;
+    }
+
+    public BigInteger getMaxPriorityFeePerGas() {
+        return maxPriorityFeePerGas;
+    }
+
+    public SendModel setMaxPriorityFeePerGas(BigInteger maxPriorityFeePerGas) {
+        this.maxPriorityFeePerGas = maxPriorityFeePerGas;
+        return this;
+    }
+
+    public BigInteger getMaxFeePerGas() {
+        return maxFeePerGas;
+    }
+
+    public SendModel setMaxFeePerGas(BigInteger maxFeePerGas) {
+        this.maxFeePerGas = maxFeePerGas;
         return this;
     }
 }

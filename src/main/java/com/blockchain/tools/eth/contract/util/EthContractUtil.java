@@ -95,14 +95,34 @@ public class EthContractUtil {
             sendModel.setGasPrice(web3j.ethGasPrice().send().getGasPrice());
         }
 
-        RawTransaction rawTransaction = RawTransaction.createTransaction(
-                sendModel.getNonce(),
-                sendModel.getGasPrice(),
-                sendModel.getGasLimit(),
-                sendModel.getToAddress(),
-                sendModel.getValue(),
-                inputData
-        );
+        RawTransaction rawTransaction = null;
+
+        if(sendModel.getChainId() <= -1L){
+            rawTransaction = RawTransaction.createTransaction(
+                    sendModel.getNonce(),
+                    sendModel.getGasPrice(),
+                    sendModel.getGasLimit(),
+                    sendModel.getToAddress(),
+                    sendModel.getValue(),
+                    inputData
+            );
+        } else {
+            if(sendModel.getMaxPriorityFeePerGas() == null || sendModel.getMaxFeePerGas() == null){
+                throw new Exception("maxPriorityFeePerGas and maxFeePerGas cannot be empty");
+            }
+
+            rawTransaction = RawTransaction.createTransaction(
+                    sendModel.getChainId(),
+                    sendModel.getNonce(),
+                    sendModel.getGasLimit(),
+                    sendModel.getToAddress(),
+                    sendModel.getValue(),
+                    inputData,
+                    sendModel.getMaxPriorityFeePerGas(),
+                    sendModel.getMaxFeePerGas()
+            );
+        }
+
 
         byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, Credentials.create(sendModel.getPrivateKey()));
         String hexValue = Numeric.toHexString(signedMessage);
