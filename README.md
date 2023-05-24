@@ -29,7 +29,7 @@ JDK8+
 <dependency>
     <groupId>com.github.yuyenews</groupId>
     <artifactId>Magician-ContractsTools</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 </dependency>
 
 <!-- This is the logging package, you must have it or the console will not see anything, any logging package that can bridge with slf4j is supported -->

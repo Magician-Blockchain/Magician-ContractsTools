@@ -95,36 +95,24 @@ public class EthContractUtil {
             sendModel.setGasPrice(web3j.ethGasPrice().send().getGasPrice());
         }
 
-        RawTransaction rawTransaction = null;
+        RawTransaction rawTransaction =RawTransaction.createTransaction(
+                sendModel.getNonce(),
+                sendModel.getGasPrice(),
+                sendModel.getGasLimit(),
+                sendModel.getToAddress(),
+                sendModel.getValue(),
+                inputData
+        );
+
+        byte[] signedMessage = null;
 
         if(sendModel.getChainId() <= -1L){
-            rawTransaction = RawTransaction.createTransaction(
-                    sendModel.getNonce(),
-                    sendModel.getGasPrice(),
-                    sendModel.getGasLimit(),
-                    sendModel.getToAddress(),
-                    sendModel.getValue(),
-                    inputData
-            );
+            signedMessage = TransactionEncoder.signMessage(rawTransaction, Credentials.create(sendModel.getPrivateKey()));
         } else {
-            if(sendModel.getMaxPriorityFeePerGas() == null || sendModel.getMaxFeePerGas() == null){
-                throw new Exception("maxPriorityFeePerGas and maxFeePerGas cannot be empty");
-            }
+            signedMessage = TransactionEncoder.signMessage(rawTransaction, sendModel.getChainId(), Credentials.create(sendModel.getPrivateKey()));
 
-            rawTransaction = RawTransaction.createTransaction(
-                    sendModel.getChainId(),
-                    sendModel.getNonce(),
-                    sendModel.getGasLimit(),
-                    sendModel.getToAddress(),
-                    sendModel.getValue(),
-                    inputData,
-                    sendModel.getMaxPriorityFeePerGas(),
-                    sendModel.getMaxFeePerGas()
-            );
         }
 
-
-        byte[] signedMessage = TransactionEncoder.signMessage(rawTransaction, Credentials.create(sendModel.getPrivateKey()));
         String hexValue = Numeric.toHexString(signedMessage);
 
         EthSendTransaction ethSendTransaction = web3j.ethSendRawTransaction(hexValue).send();
